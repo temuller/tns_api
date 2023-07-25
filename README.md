@@ -5,7 +5,7 @@ API to access Transient Name Server (TNS) data
 [![license](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/temuller/tns_api/blob/master/LICENSE)
 ![Python Version](https://img.shields.io/badge/Python-3.9%2B-blue)
 [![PyPI](https://img.shields.io/pypi/v/tns_api?label=PyPI&logo=pypi&logoColor=white)](https://pypi.org/project/tns_api/)
-[![DOI](https://zenodo.org/badge/xxxx.svg)](https://zenodo.org/badge/latestdoi/xxxx)
+[![DOI](https://zenodo.org/badge/660091525.svg)](https://zenodo.org/badge/latestdoi/660091525)
 
 
 ## Installation
@@ -80,5 +80,14 @@ To contribute, either open an issue or send a pull request (prefered option). Yo
 If you make use of this code, please cite it:
 
 ```code
-coming soon
+@software{tomas_e_muller_bravo_2023_8181824,
+  author       = {Tomás E. Müller Bravo},
+  title        = {temuller/tns\_api: First Release (for zenodo)!},
+  month        = jul,
+  year         = 2023,
+  publisher    = {Zenodo},
+  version      = {zenodo\_version},
+  doi          = {10.5281/zenodo.8181824},
+  url          = {https://doi.org/10.5281/zenodo.8181824}
+}
 ```
