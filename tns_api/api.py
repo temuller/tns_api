@@ -17,7 +17,7 @@ def get_response(url, iau_name):
     """
     headers = {
         "User-Agent": 'tns_marker{"tns_id": "' + str(TNS_ID) + '", "type": "bot",'
-        ' "name": "' + NAME + '"}'
+        ' "name": "' + str(NAME) + '"}'
     }
     sn_data = {"objname": iau_name}
     json_data = [('api_key', (None, API_KEY)),
@@ -68,13 +68,12 @@ def validate_response(response):
         if 'objname' not in reply:
             return None
         
-        reply['internal_names'] = [name.strip() for name in reply['internal_names'].split(',') if name.strip()]
         return reply
     else:
         return None
     
 def get_object(iau_name, verbose=False):
-    """Obtains the objects's Wiserep ID.
+    """Obtains the objects information.
 
     Parameters
     ----------
