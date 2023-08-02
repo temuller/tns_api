@@ -81,7 +81,7 @@ If you make use of this code, please cite it:
 
 ```code
 @software{tomas_e_muller_bravo_2023_8181824,
-  author       = {Tomás E. Müller Bravo},
+  author       = {{M{\"u}ller-Bravo}, Tom{\'a}s E.},
   title        = {temuller/tns\_api: First Release (for zenodo)!},
   month        = jul,
   year         = 2023,
