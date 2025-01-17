@@ -55,22 +55,14 @@ def validate_response(response):
 
     Returns
     -------
-    reply
+    data
         Dictionary with the targets data.
     """
     response.raise_for_status()
     data = response.json()['data']
-
-    if 'reply' in data:
-        reply = data['reply']
-        if not reply:
-            return None
-        if 'objname' not in reply:
-            return None
-        
-        return reply
-    else:
+    if 'objname' not in data:
         return None
+    return data
     
 def get_object(iau_name, verbose=False):
     """Obtains the objects information.
