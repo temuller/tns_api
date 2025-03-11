@@ -1,88 +1,98 @@
 import json
 import requests
-from tns_api._constants import TNS_ID, NAME, API_KEY
+from pathlib import Path
+from tns_api.utils import (set_headers, validate_response, 
+                           dict_to_dataframe, TNS_API_KEY)
 
-def get_response(url, iau_name):
+
+def search(object_info: dict | str) -> dict | None:
+    """Looks for information of a given object or pair of coordinates.
+
+    Parameters
+    ----------
+    object_info: Object's information.
+
+    Returns
+    -------
+    object_data: Object's data.
+    """
+    url_tns_api = "https://www.wis-tns.org/api"
+    search_url = url_tns_api + "/get/search"
+    headers = set_headers()
+    if isinstance(object_info, str):
+        # str to dict
+        split_info = object_info.split()
+        if len(split_info) == 2:
+            # assume coordinates
+            object_info = {"ra": split_info[0], 
+                           "dec": split_info[1]
+                           }  
+        elif object_info.startswith("19") or object_info.startswith("20"):
+            object_info = {"objname": object_info}
+    search_data = {'api_key': TNS_API_KEY, 'data': object_info}
+    response = requests.post(search_url, headers=headers, data=search_data)
+    object_data = validate_response(response)
+    return object_data
+
+def get_spectra(iau_name: str, parent_dir: str=None) -> None:
+    obj_info = {"objname": iau_name,
+                "spectra": "1"
+                }
+    spec_data = search(obj_info)["spectra"]
+    spec_df = dict_to_dataframe(spec_data)
+    # save spec info
+    outfile = Path(parent_dir, iau_name, "spectra.csv")
+    spec_df.to_csv(outfile, index=False)
+    # download files
+    outdir = Path(parent_dir, iau_name, "spectra")
+    for file_url in spec_df.asciifile.values:
+        download_file(file_url, outdir)
+    
+def download_file(file_url, outdir):
+    file_url = Path(file_url)
+    headers = set_headers()
+    api_data = {'api_key': TNS_API_KEY}
+    response = requests.post(str(file_url), headers=headers, data=api_data, stream=True)    
+    if response.status_code == 200:
+        outfile = Path(outdir) + file_url.name
+        with open(outfile, 'wb') as file:
+            for chunk in response:
+                file.write(chunk)
+        print ("File was successfully downloaded.\n")
+    else:
+        print ("File was not downloaded.\n")
+
+def get_response(url: str, iau_name: str) -> requests.Response | None:
     """Obtains the response from a given TNS URL.
 
     Parameters
     ----------
-    url: str
-        TNS URL.
+    url: TNS URL.
 
     Returns
     -------
-    response: requests.Response
-        Response object.
+    response: Response object.
     """
-    headers = {
-        "User-Agent": 'tns_marker{"tns_id": "' + str(TNS_ID) + '", "type": "bot",'
-        ' "name": "' + str(NAME) + '"}'
-    }
-    sn_data = {"objname": iau_name}
-    json_data = [('api_key', (None, API_KEY)),
-                            ('data', (None, json.dumps(sn_data)))]
-
-    http_errors = {
-        304: "Error 304: Not Modified: There was no new data to return.",
-        400: "Error 400: Bad Request: The request was invalid. "
-        "An accompanying error message will explain why.",
-        403: "Error 403: Forbidden: The request is understood, but it has "
-        "been refused. An accompanying error message will explain why.",
-        404: "Error 404: Not Found: The URI requested is invalid or the "
-        "resource requested, such as a category, does not exists.",
-        500: "Error 500: Internal Server Error: Something is broken.",
-        503: "Error 503: Service Unavailable.",
-    }
-
-    ###############################################################
-    response = requests.post(url, headers=headers, files = json_data)
-
-    if response.status_code == 200:
-        return response
-    else:
-        print('Response error:', http_errors[response.status_code])
-        print(url)
-        return None
-
-def validate_response(response):
-    """Checks if the content was retrieved.
-
-    Parameters
-    ----------
-    response : requests.Response
-        Response object from TNS.
-
-    Returns
-    -------
-    data
-        Dictionary with the targets data.
-    """
-    response.raise_for_status()
-    data = response.json()['data']
-    if 'objname' not in data:
-        return None
-    return data
+    headers = set_headers()
+    sn_info = {"objname": iau_name}
+    json_data = [('api_key', (None, TNS_API_KEY)),
+                            ('data', (None, json.dumps(sn_info)))]
+    response = requests.post(url, headers=headers, files=json_data)
+    return response
     
-def get_object(iau_name, verbose=False):
+def get_object(iau_name: str) -> dict | None:
     """Obtains the objects information.
 
     Parameters
     ----------
-    iau_name: str
-        IAU name of the target (e.g. 2020xne).
-    verbose: bool, default 'False'
-        If True, print some of the intermediate information
+    iau_name: IAU name of the object (e.g. 2020xne).
 
     Returns
     -------
-    obj_id: str
-        The object's Wiserep ID. Returns 'Unknown' if not found
-        or None if there is a problem of some other kind.
+    object_data: Object's data.
     """
     # look for the target ID in the search webpage
     tns_url = "https://www.wis-tns.org/api/get/object"
     response = get_response(tns_url, iau_name)
-    target_dict = validate_response(response)
-
-    return target_dict
+    object_data = validate_response(response)
+    return object_data
