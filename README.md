@@ -7,6 +7,7 @@ API to access Transient Name Server (TNS) data
 [![PyPI](https://img.shields.io/pypi/v/tns_api?label=PyPI&logo=pypi&logoColor=white)](https://pypi.org/project/tns_api/)
 [![DOI](https://zenodo.org/badge/660091525.svg)](https://zenodo.org/badge/latestdoi/660091525)
 
+This code is largely based on the scripts already provided by TNS!
 
 ## Installation
 
@@ -27,8 +28,8 @@ First of all, you will need to set a `.env` file in the current directory with t
 
 ```code
 tns_id = 'YOUR_TNS_ID'
-name = 'YOUR_BOT_NAME'
-api_key = 'YOUR_API_KEY'
+tns_bot_name = 'YOUR_BOT_NAME'
+tns_api_key = 'YOUR_API_KEY'
 ```
 
 where the values for these can be obtained by creating a [BOT](https://www.wis-tns.org/bots) (for mor information, check the [TNS Help page](https://www.wis-tns.org/content/tns-getting-started)).
@@ -39,7 +40,7 @@ where the values for these can be obtained by creating a [BOT](https://www.wis-t
 All the properties of an object can be obtained with a single line:
 
 ```python
-from tns_api import get_object
+from tns_api.api import get_object
 get_object('2004eo')
 ```
 ```python
@@ -71,6 +72,32 @@ get_object('2004eo')
  'end_prop_period': None}
 ```
 
+An object name can be retrieved using its coordinates:
+
+```python
+from tns_api.api import search
+api.search("6.37483128187 20.24293729")
+```
+```python
+{'objname': '2024ryv', 'prefix': 'SN', 'objid': 159459}
+```
+
+### Retrieving Photometry and Spectra
+
+The new version of TNS (v2) includes photometry and spectra for recent objects.
+
+```python
+from tns_api.api import get_photometry
+get_photometry('2024ryv', parent_dir='.')
+```
+This downloads a CSV file with the available photometry.
+
+```python
+from tns_api.api import get_spectra
+get_spectra('2024ryv', parent_dir='.', verbose=False)
+```
+This downloads a CSV file with the available spectroscopic information and also the ASCII files.
+
 ## Contributing
 
 To contribute, either open an issue or send a pull request (prefered option). You can also contact me directly (check my profile: https://github.com/temuller).
@@ -91,3 +118,4 @@ If you make use of this code, please cite it:
   url          = {https://doi.org/10.5281/zenodo.8181824}
 }
 ```
+Don't forget to acknowledge TNS!

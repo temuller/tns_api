@@ -18,19 +18,14 @@ http_errors = {
     }
 
 load_dotenv()
-try:
-    TNS_BOT_ID = os.getenv("tns_bot_id")
-except:
-    TNS_BOT_ID = os.getenv("tns_id")  # old version
-try:
-    TNS_BOT_NAME = os.getenv("tns_bot_name")
-except:
+TNS_ID = os.getenv("tns_id")
+TNS_BOT_NAME = os.getenv("tns_bot_name")
+if TNS_BOT_NAME is None:
     TNS_BOT_NAME = os.getenv("name")  # old version
-try:
-    TNS_API_KEY = os.getenv("tns_api_key")
-except:
+TNS_API_KEY = os.getenv("tns_api_key")
+if TNS_API_KEY is None:
     TNS_API_KEY = os.getenv("api_key")  # old version
-    
+
 def set_headers() -> dict:
     """Sets the headers for a TNS search.
 
@@ -59,9 +54,14 @@ def validate_response(response: requests.Response) -> dict | None:
     # check status
     if response.status_code == 200:
         data = response.json()['data']
-        if 'objname' not in data:
-            print("Object not found")
-            return None
+        if isinstance(data, list):
+            if 'objname' not in data[0]:
+                print("Object not found")
+                return None
+        else:
+            if 'objname' not in data:
+                print("Object not found")
+                return None
         return data
     else:
         global http_errors
