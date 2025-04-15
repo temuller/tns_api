@@ -2,8 +2,9 @@ import json
 import requests
 from pathlib import Path
 from collections import OrderedDict
+from tns_api.credentials import TNS_API_KEY
 from tns_api.utils import (set_headers, validate_response, 
-                           dict_to_dataframe, TNS_API_KEY)
+                           dict_to_dataframe)
 
 
 def search(object_coords: dict | str) -> dict | None:

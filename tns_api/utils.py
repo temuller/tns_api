@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import os
 import requests
 import pandas as pd
-from dotenv import load_dotenv
+from .credentials import TNS_ID, TNS_BOT_NAME
 
 http_errors = {
         304: "Error 304: Not Modified: There was no new data to return.",
@@ -17,14 +16,7 @@ http_errors = {
         503: "Error 503: Service Unavailable.",
     }
 
-load_dotenv()
-TNS_ID = os.getenv("tns_id")
-TNS_BOT_NAME = os.getenv("tns_bot_name")
-if TNS_BOT_NAME is None:
-    TNS_BOT_NAME = os.getenv("name")  # old version
-TNS_API_KEY = os.getenv("tns_api_key")
-if TNS_API_KEY is None:
-    TNS_API_KEY = os.getenv("api_key")  # old version
+
 
 def set_headers() -> dict:
     """Sets the headers for a TNS search.
@@ -34,7 +26,7 @@ def set_headers() -> dict:
     headers: TNS headers
     """
     headers = {
-        "User-Agent": 'tns_marker{"tns_id": "' + str(TNS_BOT_ID) + '", "type": "bot",'
+        "User-Agent": 'tns_marker{"tns_id": "' + str(TNS_ID) + '", "type": "bot",'
         ' "name": "' + str(TNS_BOT_NAME) + '"}'
     }
     return headers
