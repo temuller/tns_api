@@ -16,8 +16,6 @@ http_errors = {
         503: "Error 503: Service Unavailable.",
     }
 
-
-
 def set_headers() -> dict:
     """Sets the headers for a TNS search.
 
